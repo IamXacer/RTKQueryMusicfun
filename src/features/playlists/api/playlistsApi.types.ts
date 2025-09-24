@@ -32,7 +32,10 @@ export type PlaylistAttributes = {
   user: User
   currentUserReaction: CurrentUserReaction
 }
-
+export type CreatePlaylistArgs = {
+  title: string
+  description: string
+}
 // Arguments
 export type FetchPlaylistsArgs = {
   pageNumber?: number
