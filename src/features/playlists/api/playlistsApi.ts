@@ -13,7 +13,7 @@ export const playlistsApi = createApi({
       'API-KEY': "ef7f4357-4b35-41fb-be46-31efc3bd36c5",
     },
     prepareHeaders: (headers,api) => {
-      
+      debugger
       headers.set('Authorization', `Bearer ${import.meta.env.VITE_ACCESS_TOKEN}`)
       return headers
     },
