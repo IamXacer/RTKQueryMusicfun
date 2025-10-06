@@ -1,23 +1,33 @@
 import {
   useDeletePlaylistMutation,
   useFetchPlaylistsQuery,
-  useUpdatePlaylistMutation
+
 } from '@/features/playlists/api/playlistsApi.ts'
-import s from './PlaylistsPage.module.css'
+import s from './Playlistitem/PlailistCover/PlaylistCover.module.css'
 import { CreatePlaylistForm } from '@/features/playlists/ui/CreatePlaylistForm/CreatePlaylistForm.tsx'
 import type { PlaylistData, UpdatePlaylistArgs } from '@/features/playlists/api/playlistsApi.types.ts'
-import { type SubmitHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { PlaylistItem } from '@/features/playlists/ui/Playlistitem/Playlistitem.tsx'
 import { EditPlaylistForm } from '@/features/playlists/ui/EditPlaylistForm/EditPlaylistForm.tsx'
+import { useDebounceValue } from '@/common/hooks'
+import { Pagination } from '@/common/components'
 
 
 export const PlaylistsPage = () => {
   const [playlistId, setPlaylistId] = useState<string | null>(null)
   const { register, handleSubmit, reset } = useForm<UpdatePlaylistArgs>()
-  const { data } = useFetchPlaylistsQuery()
+  const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(2)
+
+
+  const debounceSearch = useDebounceValue(search)
+  const { data, isLoading } = useFetchPlaylistsQuery({search:debounceSearch,pageNumber:currentPage,pageSize})
+
+
   const [DeleteHandler] = useDeletePlaylistMutation()
-  const [updatePlaylist] = useUpdatePlaylistMutation()
+
 
   const DeletePlaylistHandler = (playlistId:string) => {
     if (confirm('Are you sure you want to delete this playlist?')) {
@@ -37,12 +47,23 @@ export const PlaylistsPage = () => {
    }
  }
 
+ const changePageSizeHandler = (size:number) => {
+   setCurrentPage(1)
+    setPageSize(size)
+ }
   // 4
 
   return (
     <div className={s.container}>
       <h1>Playlists page</h1>
       <CreatePlaylistForm/>
+
+      <input
+        type="search"
+        placeholder={'Search playlist by title'}
+        onChange={e => setSearch(e.currentTarget.value)}
+      />
+      {!data?.data.length && !isLoading && <h2>Playlists not found</h2>}
       <div className={s.items}>
         {data?.data.map((playlist) => {
 
@@ -54,31 +75,18 @@ export const PlaylistsPage = () => {
 
               {
                 isEditing ?
-        /*          <form onSubmit={handleSubmit(onSubmit)}>
-                    <h2>Edit playlist</h2>
-                    <div>
-                      <input {...register('title')} placeholder={'title'} />
-                    </div>
-                    <div>
-                      <input {...register('description')} placeholder={'description'} />
-                    </div>
-                    <button type={'submit'}>save</button>
-                    <button type={'button'} onClick={() => editPlaylistHandler(null)}>
-                      cancel
-                    </button>
-                  </form>*/
-                  <EditPlaylistForm playlistId={playlistId} setPlaylistId={setPlaylistId} editPlaylist={editPlaylistHandler}/>
+
+                  <EditPlaylistForm
+                    playlistId={playlistId}
+                    setPlaylistId={setPlaylistId}
+                    editPlaylist={editPlaylistHandler}
+                    handleSubmit={handleSubmit}
+                    register={register}
+                  />
                   :
                   <PlaylistItem playlist={playlist}
                                 editPlaylistHandler={editPlaylistHandler}
                                 DeletePlaylistHandler={DeletePlaylistHandler}/>
-          /*        <div>
-                    <div>title: {playlist.attributes.title}</div>
-                    <div>description: {playlist.attributes.description}</div>
-                    <div>userName: {playlist.attributes.user.name}</div>
-                    <button onClick={()=> DeletePlaylistHandler(playlist.id)}>Delete</button>
-                    <button onClick={()=> editPlaylistHandler(playlist)}>Update</button>
-                  </div>*/
               }
 
             </div>
@@ -86,6 +94,14 @@ export const PlaylistsPage = () => {
           )
         })}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        pagesCount={data?.meta.pagesCount || 1}
+        pageSize = {pageSize}
+        changePageSize={changePageSizeHandler}
+      />
     </div>
   )
 }

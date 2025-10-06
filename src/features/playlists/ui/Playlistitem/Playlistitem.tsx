@@ -1,4 +1,6 @@
 import type { PlaylistData } from '@/features/playlists/api/playlistsApi.types.ts'
+import { PlaylistCover } from '@/features/playlists/ui/Playlistitem/PlailistCover/PlaylistCover.tsx'
+import { PlaylistDescription } from '@/features/playlists/ui/Playlistitem/PlaylistDescription/PlaylistDescription.tsx'
 
 type Props = {
   playlist:PlaylistData
@@ -8,15 +10,18 @@ type Props = {
 export const PlaylistItem = ({playlist,
                                editPlaylistHandler,
                                DeletePlaylistHandler,
-
                              }:Props) => {
+
+
+
+
+
   return (
     <div>
-      <div>title: {playlist.attributes.title}</div>
-      <div>description: {playlist.attributes.description}</div>
-      <div>userName: {playlist.attributes.user.name}</div>
-      <button onClick={()=> DeletePlaylistHandler(playlist.id)}>Delete</button>
-      <button onClick={()=> editPlaylistHandler(playlist)}>Update</button>
+      <PlaylistCover playlistId={playlist.id} images={playlist.attributes.images}/>
+      <PlaylistDescription attributes={playlist.attributes}/>
+      <button onClick={() => DeletePlaylistHandler(playlist.id)}>Delete</button>
+      <button onClick={() => editPlaylistHandler(playlist)}>Update</button>
     </div>
   )
 }

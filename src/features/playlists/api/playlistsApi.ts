@@ -1,47 +1,69 @@
 import type {
   CreatePlaylistArgs,
+  FetchPlaylistsArgs,
   PlaylistData,
-  PlaylistsResponse, UpdatePlaylistArgs
+  PlaylistsResponse,
+  UpdatePlaylistArgs,
 } from '@/features/playlists/api/playlistsApi.types.ts'
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { baseApi } from '@/app/api/baseApi.ts'
+import type { Images } from '@/common/types'
 
-export const playlistsApi = createApi({
-  reducerPath: 'playlistsApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'https://musicfun.it-incubator.app/api/1.0/',
-    headers: {
-      'API-KEY': 'ef7f4357-4b35-41fb-be46-31efc3bd36c5',
-    },
-    prepareHeaders: (headers, api) => {
-      headers.set('Authorization', `Bearer ${import.meta.env.VITE_ACCESS_TOKEN}`)
-      return headers
-    },
-  }),
-  endpoints: (build) => ({
-    fetchPlaylists: build.query<PlaylistsResponse, void>({
-      query: () => 'playlists',
-    }),
-    createPlaylist: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({
-      query: (body) => ({
-        method: 'post',
-        url: 'playlists',
-        body,
+export const playlistsApi = baseApi.injectEndpoints({
+  endpoints: (build) => {
+    return {
+      fetchPlaylists: build.query<PlaylistsResponse, FetchPlaylistsArgs>({
+        query: (params) =>{
+          return {
+           url: 'playlists',params }
+        },
+        providesTags: ['Playlist'],
       }),
-    }),
-    deletePlaylist: build.mutation<void, string>({
-      query: (playlistId) => ({
-        method: 'delete',
-        url: `playlists/${playlistId}`,
+      createPlaylist: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({
+        query: (body) => ({
+          method: 'post',
+          url: 'playlists',
+          body,
+        }),
+        invalidatesTags: ['Playlist'],
       }),
-    }),
-    updatePlaylist: build.mutation<void, { playlistId: string; body: UpdatePlaylistArgs }>({
-      query: ({ playlistId,body }) => ({
-        method: 'put',
-        url: `playlists/${playlistId}`,
-        body,
+      deletePlaylist: build.mutation<void, string>({
+        query: (playlistId) => ({
+          method: 'delete',
+          url: `playlists/${playlistId}`,
+        }),
+        invalidatesTags: ['Playlist'],
       }),
-    }),
-  }),
+      updatePlaylist: build.mutation<void, { playlistId: string; body: UpdatePlaylistArgs }>({
+        query: ({ playlistId, body }) => ({
+          method: 'put',
+          url: `playlists/${playlistId}`,
+          body,
+        }),
+        invalidatesTags: ['Playlist'],
+      }),
+      uploadPlaylistCover: build.mutation<Images, { playlistId: string; file: File }>({
+        query: ({ playlistId, file }) => {
+          const formData = new FormData()
+          formData.append('file', file)
+          return {
+            method: 'post',
+            url: `playlists/${playlistId}/images/main`,
+            body: formData,
+          }
+        },
+        invalidatesTags: ['Playlist'],
+      }),
+      deletePlaylistCover: build.mutation<void, { playlistId: string }>({
+        query: ({ playlistId }) => {
+          return { method: 'delete', url: `playlists/${playlistId}/images/main` }
+        },
+        invalidatesTags: ['Playlist'],
+      }),
+    }
+  },
 })
 
-export const { useFetchPlaylistsQuery,useCreatePlaylistMutation,useDeletePlaylistMutation,useUpdatePlaylistMutation } = playlistsApi
+export const { useFetchPlaylistsQuery,
+  useCreatePlaylistMutation,
+  useDeletePlaylistMutation,useUpdatePlaylistMutation,useUploadPlaylistCoverMutation,
+  useDeletePlaylistCoverMutation} = playlistsApi
