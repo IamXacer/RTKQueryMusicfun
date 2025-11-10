@@ -1,0 +1,23 @@
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+.loadMoreButton {
+    width: 200px; /* Устанавливаем ширину */
+    background-color: #007bff; /* Цвет фона */
+    color: white; /* Цвет текста */
+    padding: 10px; /* Отступы внутри кнопки */
+    border: none; /* Убираем границу */
+    border-radius: 5px; /* Скругляем углы */
+    cursor: pointer; /* Указываем, что кнопка кликабельна */
+    font-size: 16px; /* Размер шрифта */
+}
+
+.loadMoreButton:disabled {
+    background-color: #ccc; /* Цвет фона при отключенной кнопке */
+    cursor: not-allowed; /* Убираем курсор при отключенной кнопке */
+}
