@@ -12,7 +12,7 @@ export const useInfiniteScroll = ({
                                     hasNextPage,
                                     isFetching,
                                     fetchNextPage,
-                                    rootMargin = '100px',
+                                      rootMargin = '100px',
                                     threshold = 0.1,
                                   }: Props) => {
   const observerRef = useRef<HTMLDivElement>(null)
