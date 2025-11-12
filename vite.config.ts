@@ -10,4 +10,6 @@ export default defineConfig({
       '@/': `${path.resolve(__dirname, 'src')}/`,
     },
   },
+  // Указываем базовый путь для разных окружений
+  base: process.env.NODE_ENV === 'production' ? '/RTKQueryMusicfun/' : '/',
 })
