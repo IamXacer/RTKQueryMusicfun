@@ -4,12 +4,12 @@ import { PlaylistDescription } from '@/features/playlists/ui/Playlistitem/Playli
 
 type Props = {
   playlist:PlaylistData
-  DeletePlaylistHandler:(playlistId:string) => void,
-  editPlaylistHandler:(playlist:PlaylistData) => void,
+  deletePlaylist:(playlistId:string) => void,
+  editPlaylist:(playlist:PlaylistData) => void,
 }
 export const PlaylistItem = ({playlist,
-                               editPlaylistHandler,
-                               DeletePlaylistHandler,
+                               editPlaylist,
+                               deletePlaylist,
                              }:Props) => {
 
 
@@ -20,8 +20,8 @@ export const PlaylistItem = ({playlist,
     <div>
       <PlaylistCover playlistId={playlist.id} images={playlist.attributes.images}/>
       <PlaylistDescription attributes={playlist.attributes}/>
-      <button onClick={() => DeletePlaylistHandler(playlist.id)}>Delete</button>
-      <button onClick={() => editPlaylistHandler(playlist)}>Update</button>
+      <button onClick={() => deletePlaylist(playlist.id)}>Delete</button>
+      <button onClick={() => editPlaylist(playlist)}>Update</button>
     </div>
   )
 }
