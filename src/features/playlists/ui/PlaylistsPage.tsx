@@ -23,6 +23,7 @@ export const PlaylistsPage = () => {
     pageSize,
   },{refetchOnFocus:true})
 
+
   const changePageSizeHandler = (size: number) => {
     setPageSize(size)
     setCurrentPage(1)
