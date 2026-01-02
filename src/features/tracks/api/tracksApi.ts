@@ -1,44 +1,25 @@
 import { baseApi } from '@/app/api/baseApi.ts'
 import type { FetchTracksResponse } from '@/features/tracks/api/tracksApi.types.ts'
 
-
 export const tracksApi = baseApi.injectEndpoints({
   endpoints: build => ({
-    fetchTracks: build.infiniteQuery<FetchTracksResponse, void, string | undefined>({
+    fetchTracks: build.infiniteQuery<FetchTracksResponse, void, number>({
       infiniteQueryOptions: {
-        initialPageParam:undefined,
-        getNextPageParam:(lastPage,)=>{
-
-          return lastPage.meta.nextCursor
+        initialPageParam: 1, // Стартуем с первой страницы
+        getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+          return lastPageParam < (lastPage.meta as { pagesCount: number }).pagesCount
+            ? lastPageParam + 1
+            : undefined
         },
       },
-      query: ({pageParam}) => ({
-        url: 'playlists/tracks',
-        params:{cursor:pageParam, paginationType:'cursor', pageSize: 5 }
-      }),
-    }),
-  }),
-})
-
-export const { useFetchTracksInfiniteQuery } = tracksApi
-/*
-export const tracksApi = baseApi.injectEndpoints({
-  endpoints: build => ({
-    fetchTracks: build.infiniteQuery<FetchTracksResponse, void, string | undefined>({
-    infiniteQueryOptions: {
-      initialPageParam:undefined,
-      getNextPageParam:(lastPage,)=>{
-
-    return lastPage.meta.nextCursor
+      query: ({ pageParam }) => {
+        return {
+          url: 'playlists/tracks',
+          params: { pageNumber: pageParam, pageSize: 10, paginationType: 'offset' }, // Офсетная пагинация
+        }
       },
-    },
-      query: ({pageParam}) => ({
-        url: 'playlists/tracks',
-        params:{cursor:pageParam, paginationType:'cursor', pageSize: 5 }
-      }),
     }),
   }),
 })
 
 export const { useFetchTracksInfiniteQuery } = tracksApi
-*/
