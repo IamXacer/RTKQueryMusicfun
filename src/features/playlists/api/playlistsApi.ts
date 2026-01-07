@@ -7,6 +7,7 @@ import type {
 } from '@/features/playlists/api/playlistsApi.types.ts'
 import { baseApi } from '@/app/api/baseApi.ts'
 import type { Images } from '@/common/types'
+import { current } from '@reduxjs/toolkit'
 
 export const playlistsApi = baseApi.injectEndpoints({
   endpoints: (build) => {
@@ -34,13 +35,32 @@ export const playlistsApi = baseApi.injectEndpoints({
         invalidatesTags: ['Playlist'],
       }),
       updatePlaylist: build.mutation<void, { playlistId: string; body: UpdatePlaylistArgs }>({
-        query: ({ playlistId, body }) => ({
-          method: 'put',
-          url: `playlists/${playlistId}`,
-          body,
-        }),
+        query: ({ playlistId, body }) => ({ url: `playlists/${playlistId}`, method: 'put', body }),
+        async onQueryStarted({ playlistId, body }, { dispatch, queryFulfilled }) {
+          const patchResult = dispatch(
+            playlistsApi.util.updateQueryData(
+              // название эндпоинта, в котором нужно обновить кэш
+              'fetchPlaylists',
+              // аргументы для эндпоинта
+              { pageNumber: 1, pageSize: 2, search: '' },
+              // `updateRecipe` - коллбэк для обновления закэшированного стейта мутабельным образом
+              state => {
+                const index = state.data.findIndex(playlist => playlist.id === playlistId)
+                if (index !== -1) {
+                  state.data[index].attributes = { ...state.data[index].attributes, ...body }
+                }
+              }
+            )
+          )
+          try {
+            await queryFulfilled
+          } catch {
+            patchResult.undo()
+          }
+        },
         invalidatesTags: ['Playlist'],
       }),
+
       uploadPlaylistCover: build.mutation<Images, { playlistId: string; file: File }>({
         query: ({ playlistId, file }) => {
           const formData = new FormData()
@@ -65,5 +85,7 @@ export const playlistsApi = baseApi.injectEndpoints({
 
 export const { useFetchPlaylistsQuery,
   useCreatePlaylistMutation,
-  useDeletePlaylistMutation,useUpdatePlaylistMutation,useUploadPlaylistCoverMutation,
+  useDeletePlaylistMutation,
+  useUpdatePlaylistMutation,
+  useUploadPlaylistCoverMutation,
   useDeletePlaylistCoverMutation} = playlistsApi

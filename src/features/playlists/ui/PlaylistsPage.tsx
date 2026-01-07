@@ -8,7 +8,7 @@ import { type ChangeEvent, useState } from 'react'
 import { useDebounceValue } from '@/common/hooks'
 import {  Pagination } from '@/common/components'
 import { PlaylistsList } from '@/features/playlists/ui/PlaylistsList/PlaylistsList.tsx'
-import { toast } from 'react-toastify'
+
 
 
 export const PlaylistsPage = () => {
@@ -24,21 +24,7 @@ export const PlaylistsPage = () => {
     pageSize,
   },{refetchOnFocus:true})
 
-/*  console.log({isError,error})*/
 
-/*
-  if (error) {
-    if ('status' in error ){
-      debugger
-      const errMsg = 'error' in error ? error.error : (error.data as {error: string}).error
-      toast (errMsg,{type: 'error',theme:'colored'})
-    } else {
-//
-      const errMsg = error.message || 'Something error occurred'
-      toast (errMsg,{type: 'error',theme:'colored'})
-    }
-  /!*  toast (error.data.error,{type: 'error',theme:'colored'})*!/
-  }*/
 
   const changePageSizeHandler = (size: number) => {
     setPageSize(size)
@@ -55,7 +41,9 @@ export const PlaylistsPage = () => {
   return (
     <div className={s.container}>
       <h1>Playlists page</h1>
-      <CreatePlaylistForm />
+      <CreatePlaylistForm
+       /* onCreated={() => setCurrentPage(1)}*/
+      />
       <input
         type="search"
         placeholder={'Search playlist by title'}

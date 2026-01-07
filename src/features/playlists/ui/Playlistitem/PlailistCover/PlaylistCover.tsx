@@ -6,7 +6,8 @@ import {
   useUploadPlaylistCoverMutation
 } from '@/features/playlists/api/playlistsApi.ts'
 import type { Images } from '@/common/types'
-import { toast } from 'react-toastify'
+import { errorToast } from '@/common/utils'
+
 
 type Props = {
   playlistId: string,
@@ -27,12 +28,13 @@ export const PlaylistCover = ({playlistId,images}:Props) => {
     if (!file) return
     if (!allowedTypes.includes(file.type)){
       console.log(`Invalid file type: ${file.type}`);  // Для отладки
-      toast(`Only JPEG, PNG or GIF images are allowed`,{type:'error',theme:'colored'})
+      errorToast(`Only JPEG, PNG or GIF images are allowed`,/*{type:'error',theme:'colored'}*/
+      )
       return
     }
     if (file.size > maxSize) {
       console.log(`File too large: ${file.size} bytes`);  // Для отладки
-      toast ( `The file is too large. Max size is ${Math.round(maxSize / 1024)} KB`,{type:'error',theme:'colored'} )
+      errorToast ( `The file is too large. Max size is ${Math.round(maxSize / 1024)} KB`/*,{type:'error',theme:'colored'}*/ )
       return
     }
     UploadPlaylistCover({

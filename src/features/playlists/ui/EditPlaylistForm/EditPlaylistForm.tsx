@@ -19,12 +19,10 @@ export const EditPlaylistForm = ({playlistId,
                                    register,
                                  }:Props) => {
   const [updatePlaylist] = useUpdatePlaylistMutation()
-  const onSubmit: SubmitHandler<UpdatePlaylistArgs> = body => {
-    if (!playlistId ) return
-    updatePlaylist({ playlistId, body: body }).then(() => {
-      setPlaylistId(null)
-    })
-
+  const onSubmit: SubmitHandler<UpdatePlaylistArgs> = data => {
+    if (!playlistId) return
+    updatePlaylist({ playlistId, body: data })
+    setPlaylistId(null)
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

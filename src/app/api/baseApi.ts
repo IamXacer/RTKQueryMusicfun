@@ -1,8 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { toast } from 'react-toastify'
-import { isErrorWithMessage } from '@/common/utils'
-import { isErrorWithError } from '@/common/utils/isErrorWithError.ts'
-import { isErrorWithProperty } from '@/common/utils/isErrorWithProperty.ts'
+import { handleErrors } from '@/common/utils/handleErrors.ts'
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',
@@ -22,34 +19,8 @@ export const baseApi = createApi({
     })(args, api, extraOptions)
 
     if (result.error) {
-      switch (result.error.status) {
-        case 'TIMEOUT_ERROR':
-          toast(result.error.error)
-          break
-
-        case 404:
-          if (isErrorWithProperty(result.error.data, 'error')) {
-            toast(result.error.data.error, { type: 'error', theme: 'colored' })
-          } else {
-            toast(JSON.stringify(result.error.data), { type: 'error', theme: 'colored' })
-          }
-          break
-
-
-        /*      toast((result.error.data as {error : string}).error, {type: 'error', theme: 'colored'})
-              break*/
-
-        case 429:
-          if (isErrorWithProperty(result.error.data, 'message')) {
-            toast(result.error.data.message, { type: 'error', theme: 'colored' })
-          } else {
-            toast(JSON.stringify(result.error.data), { type: 'error', theme: 'colored' })
-          }
-          break
-
-        default:
-          toast('Some error occurred', { type: 'error', theme: 'colored' })
-      }
+      debugger
+      handleErrors(result.error)
     }
     return result
   },
