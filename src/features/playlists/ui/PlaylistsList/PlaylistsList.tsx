@@ -2,17 +2,21 @@ import { EditPlaylistForm } from '@/features/playlists/ui/EditPlaylistForm/EditP
 import { PlaylistItem } from '@/features/playlists/ui/Playlistitem/Playlistitem.tsx'
 import s from './PlaylistsList.module.css'
 import { useForm } from 'react-hook-form'
-import type { PlaylistData, UpdatePlaylistArgs } from '@/features/playlists/api/playlistsApi.types.ts'
+import type {
+  FetchPlaylistsArgs,
+  PlaylistData,
+  UpdatePlaylistArgs,
+} from '@/features/playlists/api/playlistsApi.types.ts'
 import { useDeletePlaylistMutation, } from '@/features/playlists/api/playlistsApi.ts'
 import { useState } from 'react'
-
 
 type Props = {
   playlists: PlaylistData[]
   isPlaylistsLoading: boolean
+  listArgs: FetchPlaylistsArgs
 }
 
-export const PlaylistsList = ({ playlists, isPlaylistsLoading }: Props) => {
+export const PlaylistsList = ({ playlists, isPlaylistsLoading, listArgs }: Props) => {
   const [playlistId, setPlaylistId] = useState<string | null>(null)
 
   const { register, handleSubmit, reset } = useForm<UpdatePlaylistArgs>()
@@ -53,7 +57,9 @@ export const PlaylistsList = ({ playlists, isPlaylistsLoading }: Props) => {
                 register={register}
                 editPlaylist={editPlaylistHandler}
                 setPlaylistId={setPlaylistId}
+                listArgs={listArgs}
               />
+
             ) : (
               <PlaylistItem
                 playlist={playlist}

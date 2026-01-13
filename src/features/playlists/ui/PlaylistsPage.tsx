@@ -49,7 +49,12 @@ export const PlaylistsPage = () => {
         placeholder={'Search playlist by title'}
         onChange={searchPlaylistHandler}
       />
-      <PlaylistsList playlists={data?.data || []} isPlaylistsLoading={isLoading} />
+      <PlaylistsList
+        playlists={data?.data || []}
+        isPlaylistsLoading={isLoading}
+        listArgs={{ search: debounceSearch, pageNumber: currentPage, pageSize }}
+      />
+
       <Pagination
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

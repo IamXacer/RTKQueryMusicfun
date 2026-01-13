@@ -19,7 +19,7 @@ export const baseApi = createApi({
     })(args, api, extraOptions)
 
     if (result.error) {
-      debugger
+
       handleErrors(result.error)
     }
     return result
